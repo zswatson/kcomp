@@ -24,18 +24,20 @@
           if (results.length > 1) {
             console.log("multiple results");
           } else {
-            var transcript = results[0][0].transcript.toLocaleLowerCase;
+            var transcript = results[0][0].transcript.toLocaleLowerCase();
             if (transcript.search("add timer") != -1) {
-              var textMatches = [transcript.match(/\d+ hours/g), transcript.match(/\d+ minutes/g), transcript.match(/\d+ seconds/g)]
+              var textMatches = [transcript.match(/\d+ hour/g), transcript.match(/\d+ minute/g), transcript.match(/\d+ second/g)]
 
-              var timeAmounts = d3.map(textMatches, function(d) {
+              var timeAmounts = textMatches.map(function(d) {
                 if (d && d.length == 1) {
                   var split = d[0].split(" ");
                   return parseFloat(split[0]);
                 }
               });
               
-              var mils = timeAmounts[0] * 36e5 + timeAmounts[1] * 6e4 + timeAmounts[2] * 1000;
+              var mils = (timeAmounts[0] * 36e5) || 0;
+              mils += (timeAmounts[1] * 6e4) || 0; 
+              mils += (timeAmounts[2] * 1000) || 0;
               handler.addTimer(mils);
               
 
