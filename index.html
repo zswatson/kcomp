@@ -5,6 +5,7 @@
     <title>Kitchen Computer</title>
     <script src="js/app.js"></script>
     <script src="js/timer.js"></script>
+    <script src="js/speech.js"></script>
     <script src="js/vendor/d3.v3.min.js"></script>
   </head>
   <body>
@@ -12,45 +13,10 @@
       <div class="input"></div>
     </div>
     <script>
-      handler = kcomp.timerHandler("#timers");
+      app = {};
 
-      if (!('webkitSpeechRecognition' in window)) {
-        upgrade();
-      } else {
-        var recognition = new webkitSpeechRecognition();
-
-        recognition.onresult = function(event) {
-          var results = event.results;
-          if (results.length > 1) {
-            console.log("multiple results");
-          } else {
-            var transcript = results[0][0].transcript.toLocaleLowerCase();
-            if (transcript.search("add timer") != -1) {
-              var textMatches = [transcript.match(/\d+ hour/g), transcript.match(/\d+ minute/g), transcript.match(/\d+ second/g)]
-
-              var timeAmounts = textMatches.map(function(d) {
-                if (d && d.length == 1) {
-                  var split = d[0].split(" ");
-                  return parseFloat(split[0]);
-                }
-              });
-              
-              var mils = (timeAmounts[0] * 36e5) || 0;
-              mils += (timeAmounts[1] * 6e4) || 0; 
-              mils += (timeAmounts[2] * 1000) || 0;
-              handler.addTimer(mils);
-              
-
-            }
-            console.log(transcript);
-
-          }
-          console.log("recognition result:", event)
-        };
-        recognition.onstart = function() {console.log("recognition starting")};
-        recognition.onend = function() {console.log("recognition end")};
-        recognition.onerror = function(event) {console.log("recognition error:", event)};
-      }
+      app.handler = kcomp.timerHandler("#timers");
+      app.speech = kcomp.speech(app);
     </script>
   </body>
 </html>

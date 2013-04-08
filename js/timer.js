@@ -12,6 +12,7 @@
       addTimer: function(duration, startPaused){
         var self = this;
         var timer = kcomp.timer(self, self.selector, duration, startPaused);
+        return timer;
       }
     }
 
@@ -35,6 +36,7 @@
     var tempTimer = {
       container: d3.select(selector),
       id: handler.latestTimerId++,
+      label: "",
       running: startPaused ? false : true,
       duration: duration,
       elapsed: 0,
@@ -54,13 +56,19 @@
         if (self.running) {
           self.elapsed += interval;
           self.remaining = self.duration - self.elapsed;
-          self.display.select(".timer-text").text(self.getDisplayText());
+          self.display.select(".timer-text").text(self.getDisplayText() + " " + self.label);
 
           if (self.elapsed >= self.duration) {
             self.display.classed("finished", true);
 
           };
         };
+      },
+      label: function(text) {
+        var self = this;
+        if (!text) return self.label;
+        self.label = text;
+        return self;
       }
     }
 
