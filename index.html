@@ -18,10 +18,33 @@
         upgrade();
       } else {
         var recognition = new webkitSpeechRecognition();
-        recognition.continuous = true;
-        recognition.interimResults = true;
 
-        recognition.onresult = function(event) {console.log("recognition result:", event)};
+        recognition.onresult = function(event) {
+          var results = event.results;
+          if (results.length > 1) {
+            console.log("multiple results");
+          } else {
+            var transcript = results[0][0].transcript.toLocaleLowerCase;
+            if (transcript.search("add timer") != -1) {
+              var textMatches = [transcript.match(/\d+ hours/g), transcript.match(/\d+ minutes/g), transcript.match(/\d+ seconds/g)]
+
+              var timeAmounts = d3.map(textMatches, function(d) {
+                if (d && d.length == 1) {
+                  var split = d[0].split(" ");
+                  return parseFloat(split[0]);
+                }
+              });
+              
+              var mils = timeAmounts[0] * 36e5 + timeAmounts[1] * 6e4 + timeAmounts[2] * 1000;
+              handler.addTimer(mils);
+              
+
+            }
+            console.log(transcript);
+
+          }
+          console.log("recognition result:", event)
+        };
         recognition.onstart = function() {console.log("recognition starting")};
         recognition.onend = function() {console.log("recognition end")};
         recognition.onerror = function(event) {console.log("recognition error:", event)};
