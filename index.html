@@ -13,6 +13,19 @@
     </div>
     <script>
       handler = kcomp.timerHandler("#timers");
+
+      if (!('webkitSpeechRecognition' in window)) {
+        upgrade();
+      } else {
+        var recognition = new webkitSpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+
+        recognition.onresult = function(event) {console.log("recognition result:", event)};
+        recognition.onstart = function() {console.log("recognition starting")};
+        recognition.onend = function() {console.log("recognition end")};
+        recognition.onerror = function(event) {console.log("recognition error:", event)};
+      }
     </script>
   </body>
 </html>

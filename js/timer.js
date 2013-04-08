@@ -9,9 +9,9 @@
       interval: 100,
       timers: {},
       latestTimerId: 0,
-      addTimer: function(duration, startRunning){
+      addTimer: function(duration, startPaused){
         var self = this;
-        var timer = kcomp.timer(self, self.selector, duration, startRunning);
+        var timer = kcomp.timer(self, self.selector, duration, startPaused);
       }
     }
 
@@ -31,20 +31,22 @@
   }
 
 
-  kcomp.timer = function(handler, selector, duration, startRunning) {
+  kcomp.timer = function(handler, selector, duration, startPaused) {
     var tempTimer = {
       container: d3.select(selector),
       id: handler.latestTimerId++,
-      running: startRunning,
+      running: startPaused ? false : true,
       duration: duration,
       elapsed: 0,
       remaining: duration,
       getDisplayText: function() {
         var timeFormat = d3.format("02d");
         var self = this;
-        var hours = timeFormat(Math.floor(self.remaining / 36e5)),
-            mins = timeFormat(Math.floor((self.remaining % 36e5) / 6e4)),
-            secs = timeFormat(Math.floor((self.remaining % 6e4) / 1000));
+
+        var millis = Math.abs(self.remaining);
+        var hours = timeFormat(Math.floor(millis / 36e5)),
+            mins = timeFormat(Math.floor((millis % 36e5) / 6e4)),
+            secs = timeFormat(Math.floor((millis % 6e4) / 1000));
         return [hours, mins, secs].join(":");
       },
       tick: function(interval){
@@ -55,9 +57,8 @@
           self.display.select(".timer-text").text(self.getDisplayText());
 
           if (self.elapsed >= self.duration) {
-            self.running = false;
-            self.display.select(".timer-text").text("finished");
-            console.log("finished!");
+            self.display.classed("finished", true);
+
           };
         };
       }
