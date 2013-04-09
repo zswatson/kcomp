@@ -7,6 +7,9 @@
     <script src="js/timer.js"></script>
     <script src="js/speech.js"></script>
     <script src="js/vendor/d3.v3.min.js"></script>
+    <style>
+      @import url(css/style.css);
+    </style>
   </head>
   <body>
     <div id="timers">
@@ -17,6 +20,8 @@
 
       app.handler = kcomp.timerHandler("#timers");
       app.speech = kcomp.speech(app);
+
+      app.speech.processText("add timer 2 seconds cauliflower");
     </script>
   </body>
 </html>

@@ -35,7 +35,7 @@
             var mils = (timeAmounts[0] * 36e5) || 0;
             mils += (timeAmounts[1] * 6e4) || 0; 
             mils += (timeAmounts[2] * 1000) || 0;
-            self.app.handler.addTimer(mils).label(text);
+            self.app.handler.addTimer(mils).label(text || "");
             console.log("remaining text", text);
           }
         }

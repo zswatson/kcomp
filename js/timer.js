@@ -45,10 +45,11 @@
         var timeFormat = d3.format("02d");
         var self = this;
 
-        var millis = Math.abs(self.remaining);
-        var hours = timeFormat(Math.floor(millis / 36e5)),
-            mins = timeFormat(Math.floor((millis % 36e5) / 6e4)),
-            secs = timeFormat(Math.floor((millis % 6e4) / 1000));
+        var totalSeconds = Math.abs(Math.ceil(self.remaining / 1000));
+
+        var hours = timeFormat(Math.floor(totalSeconds / 3600)),
+            mins = timeFormat(Math.floor((totalSeconds % 3600) / 60)),
+            secs = timeFormat(totalSeconds % 6e4);
         return [hours, mins, secs].join(":");
       },
       tick: function(interval){
@@ -56,30 +57,54 @@
         if (self.running) {
           self.elapsed += interval;
           self.remaining = self.duration - self.elapsed;
-          self.display.select(".timer-text").text(self.getDisplayText() + " " + self.label);
+          self.display.select(".timer-time").text(self.getDisplayText());
 
           if (self.elapsed >= self.duration) {
-            self.display.classed("finished", true);
+            if (!(self.display.classed("finished"))) {
+              self.display.classed("finished", true);
+              self.display.select(".alarm")[0][0].play();
+              console.log(self.label + " finished!");
+            }
+            self.display.classed("blink", Math.floor(self.elapsed / 1000) % 2);
 
           };
         };
       },
       label: function(text) {
         var self = this;
-        if (!text) return self.label;
+        if (text == null) return self.label;
         self.label = text;
+        self.display.select(".timer-label").text(text);
         return self;
-      }
+      },
+      play: function() {
+        var self = this;
+        this.running = true;
+      },
+      pause: function() {
+        var self = this;
+        this.running = false;
+      },
     }
 
     var display = tempTimer.display = tempTimer.container.append("div")
       .classed("timer", true);
 
-    var text = display.append("p")
-      .classed("timer-text", true)
-      .text("INIT");
+    var time = display.append("p")
+      .classed("timer-time", true)
+      .text("TIME");
 
+    var label = display.append("p")
+      .classed("timer-label", true)
+      .text("LABEL");
 
+    tempTimer.alarm = display.append("audio")
+      .classed("alarm", true)
+      .attr("preload", "auto")
+      
+
+    tempTimer.alarm.append("source")
+      .attr("src", "assets/sounds/timer3.mp3");
       
     handler.timers[tempTimer.id] = tempTimer;
     return tempTimer;
